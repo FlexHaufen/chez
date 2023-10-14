@@ -34,43 +34,31 @@ namespace Chez {
         if (!m_PieceTextureLookup[CH_WHITE][1].loadFromFile("./assets/pieces/white-pawn.png"))  { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_WHITE][2].loadFromFile("./assets/pieces/white-knight.png")){ CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_WHITE][3].loadFromFile("./assets/pieces/white-bishop.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][4].loadFromFile("./assets/pieces/white-rock.png"))  { CH_CORE_WARN("Board Texture not found!"); }
+        if (!m_PieceTextureLookup[CH_WHITE][4].loadFromFile("./assets/pieces/white-rook.png"))  { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_WHITE][5].loadFromFile("./assets/pieces/white-queen.png")) { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_WHITE][6].loadFromFile("./assets/pieces/white-king.png"))  { CH_CORE_WARN("Board Texture not found!"); }
     
         if (!m_PieceTextureLookup[CH_BLACK][1].loadFromFile("./assets/pieces/black-pawn.png"))  { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_BLACK][2].loadFromFile("./assets/pieces/black-knight.png")){ CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_BLACK][3].loadFromFile("./assets/pieces/black-bishop.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][4].loadFromFile("./assets/pieces/black-rock.png"))  { CH_CORE_WARN("Board Texture not found!"); }
+        if (!m_PieceTextureLookup[CH_BLACK][4].loadFromFile("./assets/pieces/black-rook.png"))  { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_BLACK][5].loadFromFile("./assets/pieces/black-queen.png")) { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_BLACK][6].loadFromFile("./assets/pieces/black-king.png"))  { CH_CORE_WARN("Board Texture not found!"); }
     
-    
+        std::string s = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR";
+        FenToBoard(s);
 
-        Piece p;
-        p.color = Piece_Color::White;
-        p.type = Piece_Type::King;
-    
-        m_Board[0] = p;
-        m_Board[1] = p;
-
-        m_Board[63] = p;
-        m_Board[62] = p;
-
-    
     }
 
 
     void Board::OnRender() {
         m_Window.draw(m_BoardSprite);
     
-        CH_CORE_TRACE("Boardsize {0}", m_Board.size());
-
         for (u8 i = 0; i < m_Board.size(); i++) {
             sf::Sprite sprite;
             sprite.setTexture(m_PieceTextureLookup[(u8)m_Board[i].color][(u8)m_Board[i].type]);
             // TODO: Define random ass numbers
-            sprite.setPosition(sf::Vector2f((u8)(i / 8) * CH_GLOBAL_SCALE * 32, (u8)(i % 8) * CH_GLOBAL_SCALE * 32));
+            sprite.setPosition(sf::Vector2f((u8)(i % 8) * CH_GLOBAL_SCALE * 32, (u8)(i / 8) * CH_GLOBAL_SCALE * 32));
             m_Window.draw(sprite);
         }
     }
@@ -93,4 +81,47 @@ namespace Chez {
         return m_Board[square];
     }
 
+
+    void Board::FenToBoard(std::string &fen_string) {
+
+        v2 board = {0, 0};
+
+        const std::map<char, Piece_Type> pieceLookupMap {
+            {'P', Piece_Type::Pawn },
+            {'N', Piece_Type::Knight },
+            {'B', Piece_Type::Bishop },
+            {'R', Piece_Type::Rook },
+            {'Q', Piece_Type::Queen },
+            {'K', Piece_Type::King },
+        };
+
+        for (char &c : fen_string) {
+            if (c == '/' || c == '\\') {
+                board.y++;
+                board.x = 0;
+            }
+            else if (c >= '0' && c <= '8') {
+                board.x += (int)(c - '0');
+            }
+            else {
+                if (pieceLookupMap.count(c) > 0) {
+                    // Key found white
+                    Piece p = {pieceLookupMap.at(c), Piece_Color::White };
+                    m_Board[board.x + board.y * CH_BOARD_SIZE_X] = p;
+                } 
+                else {
+                    c = toupper(c);
+                    if (pieceLookupMap.count(c) > 0) {
+                        // Key Found black
+                        Piece p = { pieceLookupMap.at(c), Piece_Color::Black };
+                        m_Board[board.x + board.y * CH_BOARD_SIZE_X] = p;
+                    }
+                    else {
+                        CH_CORE_ERROR("FEN literal [{0}] not found. passing", c); 
+                    }
+                }
+                board.x++;
+            }
+        }
+    }
 }

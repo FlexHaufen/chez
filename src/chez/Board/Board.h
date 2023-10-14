@@ -64,5 +64,9 @@ namespace Chez {
 
         std::array<Piece, (CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y)> m_Board = { };     // Board
 
+
+        void FenToBoard(std::string &s);
+
+
     };
 }
