@@ -14,6 +14,9 @@
 #include "chez/ch_pch.h"
 #include "chez/Core/Events/EventManager.h"
 
+
+#include "chez/Board/Board.h"
+
 //*** DEFINES ***
 
 
@@ -78,6 +81,10 @@ namespace Chez {
 
         sf::RenderWindow m_Window;      // Sfml window
         std::string m_WindowTitle;      // Sfml window title
+
+
+
+        Ref<Board>      m_Board;        // Game Board
 
         EventManager m_EventManager;    // Event manager
 

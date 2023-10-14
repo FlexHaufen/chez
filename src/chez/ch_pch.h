@@ -32,9 +32,9 @@
 #include <SFML/Window.hpp>
 
 // * ImGui *
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui-SFML.h"
-#include "imgui.h"
+// #define IMGUI_DEFINE_MATH_OPERATORS
+// #include "imgui-SFML.h"
+// #include "imgui.h"
 
 
 

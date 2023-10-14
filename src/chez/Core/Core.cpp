@@ -41,6 +41,10 @@ namespace Chez {
         //    m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
         //}
 
+
+
+        m_Board = CreateRef<Board>(m_Window);
+
         m_isRunning = true;        
     }
 
@@ -88,6 +92,8 @@ namespace Chez {
 
             // ---- RENDER LOOP ----
             m_Window.clear(CH_SCENE_CLEAR_BACKGROUND);
+            m_Board->OnRender();
+
             m_Window.display();
         } 
         else {

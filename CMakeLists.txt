@@ -55,8 +55,8 @@ find_package(SFML 2.5.1 REQUIRED COMPONENTS window system graphics audio network
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/vendor/spdlog/)
 
 #----IMGUI-SFML-------
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/lib/vendor/imgui/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib/vendor/imgui-sfml/)
+#set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/lib/vendor/imgui/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/lib/vendor/imgui-sfml/)
 
 #----------------------------------------------------
 #				      INCLUDE DIRS
@@ -79,8 +79,8 @@ set(LIBS 	sfml-window
 			sfml-graphics
 			sfml-audio
 			sfml-network
-			spdlog
-			ImGui-SFML)
+			spdlog)
+			#ImGui-SFML)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
