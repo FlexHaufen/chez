@@ -15,6 +15,7 @@
 
 #pragma warning(push, 0)
 #include <algorithm>
+#include <array>
 #include <string>
 #include <fstream>
 #include <iostream>

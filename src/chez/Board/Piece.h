@@ -20,8 +20,8 @@
 namespace Chez {
 
 
-    enum Piece_Type  { None = 0, Pawn, Knight, Bishop, Rook, Queen, King };
-    enum Piece_Color { White = 0, Black = 8};
+    enum class Piece_Type  { None = 0, Pawn, Knight, Bishop, Rook, Queen, King };
+    enum class Piece_Color { White = 0, Black = 1};
 
 
     /**
@@ -29,9 +29,7 @@ namespace Chez {
      * 
      */
     struct Piece {
-        Piece_Color color;
         Piece_Type type;
-
-
-    }
+        Piece_Color color;
+    };
 }
