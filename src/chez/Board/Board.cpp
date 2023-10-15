@@ -19,7 +19,6 @@ namespace Chez {
     m_Window(window) {
 
         CH_CORE_INFO("Initializing Board");
-
         if (!m_BoardTexture.loadFromFile(CH_BOARD_TEXTURE_PATH)) {
             CH_CORE_WARN("Board Texture not found!");
         } else {
@@ -27,7 +26,6 @@ namespace Chez {
         }
         m_BoardSprite.setTexture(m_BoardTexture);
         m_BoardSprite.setPosition(sf::Vector2f(0,0));
-
         m_BoardSprite.setScale(sf::Vector2f(2, 2));
 
         // Load all Pieces
@@ -45,6 +43,7 @@ namespace Chez {
         if (!m_PieceTextureLookup[CH_BLACK][5].loadFromFile("./assets/pieces/black-queen.png")) { CH_CORE_WARN("Board Texture not found!"); }
         if (!m_PieceTextureLookup[CH_BLACK][6].loadFromFile("./assets/pieces/black-king.png"))  { CH_CORE_WARN("Board Texture not found!"); }
     
+        // NOTE (flex): FEN test string
         std::string s = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR";
         FenToBoard(s);
 
@@ -64,7 +63,31 @@ namespace Chez {
     }
 
 
-    void Board::SetPiece(u8 square, Piece piece) {
+    void Board::OnEvent(sf::Event &e) {
+
+    }
+
+
+    void Board::OnUpdate() {
+        // Get Mouse pos
+        sf::Vector2i pos(m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)) / CH_GLOBAL_SCALE);
+    }
+
+    u8 Board::MovePiece(u8 square, u8 target_square) {
+        if (square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
+            CH_CORE_ERROR("access violation: Square [{0}] not in range", square);
+            return 1;
+        }
+        if (target_square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
+            CH_CORE_ERROR("access violation: Target_Square [{0}] not in range", target_square);
+            return 1;
+        }
+        SetPiece(target_square, GetPiece(square));
+        return 0;
+    }
+
+
+    void Board::SetPiece(u8 square, Piece& piece) {
         if (square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
             CH_CORE_ERROR("access violation: Square [{0}] not in range", square);
             return;
@@ -72,7 +95,7 @@ namespace Chez {
         m_Board[square] = piece;
     }
 
-    Piece Board::GetPiece(u8 square) {
+    Piece& Board::GetPiece(u8 square) {
         if (square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
             CH_CORE_ERROR("access violation: Square [{0}] not in range. Returning 0", square);
             //return nullptr_t;

@@ -12,8 +12,6 @@
 
 // *** INCLUDES ***
 #include "chez/ch_pch.h"
-#include "chez/Core/Events/EventManager.h"
-
 
 #include "chez/Board/Board.h"
 
@@ -64,10 +62,11 @@ namespace Chez {
         void OnUpdate();
 
         /**
-         * @brief Performe a HotReload
+         * @brief Event
          * 
          */
-        void PerformHotReload();
+        void OnEvent();
+
 
     private:
         // ** Members **
@@ -75,9 +74,7 @@ namespace Chez {
         sf::Time m_dt;                  // DeltaTime
 
         b8 m_isRunning = true;          // True when app is running
-        b8 m_isPaused = false;          // True when app is paused
         b8 m_isMinimized = false;       // True when app is minimzed
-        b8 m_UpdateGame = true;         // True when game should be updated
 
         sf::RenderWindow m_Window;      // Sfml window
         std::string m_WindowTitle;      // Sfml window title
@@ -85,8 +82,5 @@ namespace Chez {
 
 
         Ref<Board>      m_Board;        // Game Board
-
-        EventManager m_EventManager;    // Event manager
-
     };
 }
