@@ -12,6 +12,8 @@
 // *** INCLUDES ***
 #include "chez/Board/Board.h"
 
+#include "chez/Helper/Convert.h"
+
 namespace Chez {
 
 
@@ -22,55 +24,78 @@ namespace Chez {
         if (!m_BoardTexture.loadFromFile(CH_BOARD_TEXTURE_PATH)) {
             CH_CORE_WARN("Board Texture not found!");
         } else {
+            m_SquareSize = sf::Vector2i(m_BoardTexture.getSize().x / CH_BOARD_SIZE_X, m_BoardTexture.getSize().y / CH_BOARD_SIZE_Y);
+
+            m_BoardSprite.setTexture(m_BoardTexture);
+            m_BoardSprite.setPosition(sf::Vector2f(0,0));
+            m_BoardSprite.setScale(sf::Vector2f(CH_GLOBAL_SCALE, CH_GLOBAL_SCALE));
             CH_CORE_INFO("Current Board size = {0} / {1}", m_BoardTexture.getSize().x, m_BoardTexture.getSize().y);
         }
-        m_BoardSprite.setTexture(m_BoardTexture);
-        m_BoardSprite.setPosition(sf::Vector2f(0,0));
-        m_BoardSprite.setScale(sf::Vector2f(2, 2));
 
-        // Load all Pieces
-        if (!m_PieceTextureLookup[CH_WHITE][1].loadFromFile("./assets/pieces/white-pawn.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][2].loadFromFile("./assets/pieces/white-knight.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][3].loadFromFile("./assets/pieces/white-bishop.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][4].loadFromFile("./assets/pieces/white-rook.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][5].loadFromFile("./assets/pieces/white-queen.png")) { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_WHITE][6].loadFromFile("./assets/pieces/white-king.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-    
-        if (!m_PieceTextureLookup[CH_BLACK][1].loadFromFile("./assets/pieces/black-pawn.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][2].loadFromFile("./assets/pieces/black-knight.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][3].loadFromFile("./assets/pieces/black-bishop.png")){ CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][4].loadFromFile("./assets/pieces/black-rook.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][5].loadFromFile("./assets/pieces/black-queen.png")) { CH_CORE_WARN("Board Texture not found!"); }
-        if (!m_PieceTextureLookup[CH_BLACK][6].loadFromFile("./assets/pieces/black-king.png"))  { CH_CORE_WARN("Board Texture not found!"); }
-    
+        
+
         // NOTE (flex): FEN test string
         std::string s = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR";
         FenToBoard(s);
 
+        // Inizialise Board
+        for (u8 i = 0; i < m_Board.size(); i++) {
+            if (m_Board[i] == nullptr) {
+                continue;
+            }
+            sf::Texture &t = m_PieceTextureLookup.getTexture(m_Board[i]->type, m_Board[i]->color);
+            m_Board[i]->sprite.setTexture(t);
+            // Dynamically set Scale
+            m_Board[i]->sprite.setScale(sf::Vector2f(m_BoardTexture.getSize().x / t.getSize().x * CH_GLOBAL_SCALE / CH_BOARD_SIZE_X,
+                                                    m_BoardTexture.getSize().y / t.getSize().y * CH_GLOBAL_SCALE / CH_BOARD_SIZE_Y));
+
+            UpdateSpritePos(i);
+        }
     }
 
 
     void Board::OnRender() {
         m_Window.draw(m_BoardSprite);
-    
-        for (u8 i = 0; i < m_Board.size(); i++) {
-            sf::Sprite sprite;
-            sprite.setTexture(m_PieceTextureLookup[(u8)m_Board[i].color][(u8)m_Board[i].type]);
-            // TODO: Define random ass numbers
-            sprite.setPosition(sf::Vector2f((u8)(i % 8) * CH_GLOBAL_SCALE * 32, (u8)(i / 8) * CH_GLOBAL_SCALE * 32));
-            m_Window.draw(sprite);
+        for (auto &i : m_Board) {
+            if (i == nullptr) {
+                continue;
+            }
+            m_Window.draw(i->sprite);
         }
     }
 
 
     void Board::OnEvent(sf::Event &e) {
 
+        // FIXME (inj):
+        // - Error on moving to the same square
+        // - Error on clicken on another square first
+        switch(e.type) {
+            case sf::Event::MouseButtonPressed:
+                if (e.key.code == sf::Mouse::Left) {
+                    DragPiece();
+                }
+                break;
+            
+            case sf::Event::MouseButtonReleased:
+                if (e.key.code == sf::Mouse::Left) {
+                    DropPiece();
+                }
+                break;
+            
+            default:
+                break;
+        }
     }
 
 
     void Board::OnUpdate() {
-        // Get Mouse pos
-        sf::Vector2i pos(m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)) / CH_GLOBAL_SCALE);
+        if (m_DragActive) {
+            m_Board[m_DragFromSquare]->sprite.setPosition(sf::Vector2f(Convert::getRelativeMousePosition(m_Window)) - sf::Vector2f(64, 64));
+        }
+
+            
+        
     }
 
     u8 Board::MovePiece(u8 square, u8 target_square) {
@@ -82,28 +107,49 @@ namespace Chez {
             CH_CORE_ERROR("access violation: Target_Square [{0}] not in range", target_square);
             return 1;
         }
-        SetPiece(target_square, GetPiece(square));
+
+        if (target_square != square) {
+            CH_CORE_TRACE("Moving: [{0} -> {1}]", square, target_square);
+            m_Board[target_square] = m_Board[square];
+            m_Board[square] = nullptr;
+        }
+
+        UpdateSpritePos(target_square);
         return 0;
     }
 
-
-    void Board::SetPiece(u8 square, Piece& piece) {
-        if (square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
-            CH_CORE_ERROR("access violation: Square [{0}] not in range", square);
+    void Board::UpdateSpritePos(u8 square) {
+        if (m_Board[square] == nullptr) {
+            CH_CORE_ERROR("access violation: nullptr refrence in UpdateSquarPos", square);
             return;
         }
-        m_Board[square] = piece;
+        m_Board[square]->sprite.setPosition(sf::Vector2f((u8)(square % CH_BOARD_SIZE_X) * CH_GLOBAL_SCALE * m_SquareSize.x, 
+                                                         (u8)(square / CH_BOARD_SIZE_X) * CH_GLOBAL_SCALE * m_SquareSize.y));
     }
 
-    Piece& Board::GetPiece(u8 square) {
-        if (square >= CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y) {
-            CH_CORE_ERROR("access violation: Square [{0}] not in range. Returning 0", square);
-            //return nullptr_t;
-            return m_Board[0];
+    void Board::DragPiece() {
+        s8 square = Convert::mousePositionToBoardSquare(Convert::getRelativeMousePosition(m_Window), m_SquareSize);
+        if (square == -1) { return; }
+        if (m_Board[square] == nullptr) { return; }
+
+        m_DragActive = true; 
+        m_DragFromSquare = square;
+    }
+
+    void Board::DropPiece() {
+        if (!m_DragActive) { return; }
+
+        s8 square = Convert::mousePositionToBoardSquare(Convert::getRelativeMousePosition(m_Window), m_SquareSize);
+
+        if (square != -1) {
+            m_DragToSquare = square;
         }
-        return m_Board[square];
+        else {
+            m_DragToSquare = m_DragFromSquare;
+        }
+        MovePiece(m_DragFromSquare, m_DragToSquare);
+        m_DragActive = false;
     }
-
 
     void Board::FenToBoard(std::string &fen_string) {
 
@@ -129,14 +175,18 @@ namespace Chez {
             else {
                 if (pieceLookupMap.count(c) > 0) {
                     // Key found white
-                    Piece p = {pieceLookupMap.at(c), Piece_Color::White };
+                    Piece* p = new Piece;
+                    p->type = pieceLookupMap.at(c);
+                    p->color = Piece_Color::White;
                     m_Board[board.x + board.y * CH_BOARD_SIZE_X] = p;
                 } 
                 else {
                     c = toupper(c);
                     if (pieceLookupMap.count(c) > 0) {
                         // Key Found black
-                        Piece p = { pieceLookupMap.at(c), Piece_Color::Black };
+                        Piece* p = new Piece;
+                        p->type = pieceLookupMap.at(c);
+                        p->color = Piece_Color::Black;
                         m_Board[board.x + board.y * CH_BOARD_SIZE_X] = p;
                     }
                     else {

@@ -16,18 +16,6 @@
 #include "chez/Board/Piece.h"
 
 //*** DEFINES ***
-#define CH_BOARD_SIZE_X 8
-#define CH_BOARD_SIZE_Y 8
-
-#define CH_WHITE 0
-#define CH_BLACK 1
-
-#define CH_BOARD_TEXTURE_PATH   "./assets/board.png"
-#define CH_PIECE_TEXTURE_PATH   "./assets/pieces"
-
-
-#define CH_NUM_PIECES       6 + 1
-#define CH_NUM_PIECE_COLORS 2
 
 
 
@@ -41,13 +29,31 @@ namespace Chez {
     class Board {
     public:
         
+        /**
+         * @brief Construct a new Chess Board
+         * 
+         * @param window    ref sf::RenderWindow 
+         */
         Board(sf::RenderWindow &window);         // Ref to EventManager
 
+        /**
+         * @brief Update
+         * 
+         */
+        void OnUpdate();
+
+        /**
+         * @brief Render
+         * 
+         */
         void OnRender();
 
+        /**
+         * @brief Event
+         * 
+         * @param e  ref sf::Event
+         */
         void OnEvent(sf::Event &e);
-
-        void OnUpdate();
 
 
         /**
@@ -64,20 +70,54 @@ namespace Chez {
 
     private:
 
-        void SetPiece(u8 square, Piece& piece);
-        Piece& GetPiece(u8 square);        
+        // void SetPiece(u8 square, Piece& piece);
+        // Piece& GetPiece(u8 square);     
+
+        /**
+         * @brief Sets Board to given FEN-String
+         * 
+         * @param s         FenString
+         */
         void FenToBoard(std::string &s);
+
+        /**
+         * @brief Updates sprite at given pos
+         *        This Function centers the sprite to the corresponding
+         *        square.
+         * 
+         * @param square 
+         */
+        void UpdateSpritePos(u8 square);
+
+        /**
+         * @brief Drag a Piece at current mouse pos
+         * 
+         */
+        void DragPiece();
+
+        /**
+         * @brief Drag a Piece at current mouse pos
+         * 
+         */
+        void DropPiece();
 
     private:
         // ** Members **    
         sf::RenderWindow   &m_Window;           // Ref to sf::RenderWindow
 
         // Textures
-        sf::Texture         m_BoardTexture;
-        sf::Sprite          m_BoardSprite;
+        sf::Texture         m_BoardTexture;     // texture of Board
+        sf::Sprite          m_BoardSprite;      // sprite of Board
+        sf::Vector2i        m_SquareSize;       // Size of a single board square
 
-        // Board        
-        std::array<std::array<sf::Texture, CH_NUM_PIECES>, CH_NUM_PIECE_COLORS> m_PieceTextureLookup;
-        std::array<Piece, (CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y)> m_Board = { };     // Board
+        // Drag & Drop
+        b8 m_DragActive = false;                // true: Drag is active
+        u8 m_DragFromSquare;                    // square from Drag&Drop
+        u8 m_DragToSquare;                      // square to Drag&Drop
+
+        // Board
+        PieceTextureLookup m_PieceTextureLookup;    // Texture Map for pieces
+        
+        std::array<Piece*, (CH_BOARD_SIZE_X * CH_BOARD_SIZE_Y)> m_Board = {nullptr};     // Board
     };
 }

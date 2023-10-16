@@ -70,6 +70,9 @@ namespace Chez {
     void Core::OnEvent() {
         sf::Event e;
         while (m_Window.pollEvent(e)) {
+
+            m_Board->OnEvent(e);
+
             switch(e.type) {
                 case sf::Event::Closed:;
                      Close();
