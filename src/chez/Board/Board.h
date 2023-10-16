@@ -109,6 +109,7 @@ namespace Chez {
         sf::Texture         m_BoardTexture;     // texture of Board
         sf::Sprite          m_BoardSprite;      // sprite of Board
         sf::Vector2i        m_SquareSize;       // Size of a single board square
+        std::array<sf::RectangleShape, CH_MAX_MOVE_TRACEBACK> m_MoveTracbackSquares;    // Deque for Rectangleshape to store the latest movment markings
 
         // Drag & Drop
         b8 m_DragActive = false;                // true: Drag is active

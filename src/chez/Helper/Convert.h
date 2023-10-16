@@ -44,5 +44,29 @@ namespace Chez {
             }
             return -1;
         }
+
+        /**
+         * @brief Get a traceback rectangle for latest move
+         *        at given square
+         * @param squareSize    single squaresize of board [px]
+         * @param square        index of square
+         * @param color         color of rect
+         * @return sf::RectangleShape 
+         */
+        sf::RectangleShape getBoardTracebackRect(sf::Vector2i squareSize, u8 square, sf::Color color) {
+            sf::RectangleShape rect;
+
+            rect.setSize(sf::Vector2f(squareSize));
+            // Dynamically set Scale
+            rect.setScale(sf::Vector2f(CH_GLOBAL_SCALE,
+                                       CH_GLOBAL_SCALE));
+
+            rect.setPosition(sf::Vector2f((u8)(square % CH_BOARD_SIZE_X) * CH_GLOBAL_SCALE * squareSize.x, 
+                                          (u8)(square / CH_BOARD_SIZE_X) * CH_GLOBAL_SCALE * squareSize.y));
+
+            rect.setFillColor(color);
+
+            return rect;
+        }
     }
 }

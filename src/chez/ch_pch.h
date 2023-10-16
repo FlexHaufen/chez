@@ -72,3 +72,6 @@
 
 #define CH_NUM_PIECES       6 + 1
 #define CH_NUM_PIECE_COLORS 2
+
+
+#define CH_MAX_MOVE_TRACEBACK 2

@@ -56,6 +56,11 @@ namespace Chez {
 
     void Board::OnRender() {
         m_Window.draw(m_BoardSprite);
+
+        for (auto &i : m_MoveTracbackSquares) {
+            m_Window.draw(i);
+        }
+
         for (auto &i : m_Board) {
             if (i == nullptr) {
                 continue;
@@ -112,6 +117,11 @@ namespace Chez {
             CH_CORE_TRACE("Moving: [{0} -> {1}]", square, target_square);
             m_Board[target_square] = m_Board[square];
             m_Board[square] = nullptr;
+
+            // Update Traceback squares
+            m_MoveTracbackSquares[0] = Convert::getBoardTracebackRect(m_SquareSize, square, sf::Color(163, 177, 138, 255));
+            m_MoveTracbackSquares[1] = Convert::getBoardTracebackRect(m_SquareSize, target_square, sf::Color(88, 129, 87, 255));
+
         }
 
         UpdateSpritePos(target_square);
