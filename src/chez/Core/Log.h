@@ -73,11 +73,11 @@ namespace Chez {
     #define CH_CORE_CRITICAL(...) ::Chez::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
     // Client log macros
-    #define AC_TRACE(...)         ::Chez::Log::GetClientLogger()->trace(__VA_ARGS__)
-    #define AC_INFO(...)          ::Chez::Log::GetClientLogger()->info(__VA_ARGS__)
-    #define AC_WARN(...)          ::Chez::Log::GetClientLogger()->warn(__VA_ARGS__)
-    #define AC_ERROR(...)         ::Chez::Log::GetClientLogger()->error(__VA_ARGS__)
-    #define AC_CRITICAL(...)      ::Chez::Log::GetClientLogger()->critical(__VA_ARGS__)
+    #define CH_TRACE(...)         ::Chez::Log::GetClientLogger()->trace(__VA_ARGS__)
+    #define CH_INFO(...)          ::Chez::Log::GetClientLogger()->info(__VA_ARGS__)
+    #define CH_WARN(...)          ::Chez::Log::GetClientLogger()->warn(__VA_ARGS__)
+    #define CH_ERROR(...)         ::Chez::Log::GetClientLogger()->error(__VA_ARGS__)
+    #define CH_CRITICAL(...)      ::Chez::Log::GetClientLogger()->critical(__VA_ARGS__)
 
 #else
     // Core log macros
@@ -88,9 +88,9 @@ namespace Chez {
     #define CH_CORE_CRITICAL(...) 
 
     // Client log macros
-    #define AC_TRACE(...)         
-    #define AC_INFO(...)          
-    #define AC_WARN(...)          
-    #define AC_ERROR(...)         
-    #define AC_CRITICAL(...)      
+    #define CH_TRACE(...)         
+    #define CH_INFO(...)          
+    #define CH_WARN(...)          
+    #define CH_ERROR(...)         
+    #define CH_CRITICAL(...)      
 #endif

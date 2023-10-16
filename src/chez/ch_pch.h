@@ -15,6 +15,7 @@
 
 #pragma warning(push, 0)
 #include <algorithm>
+#include <array>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -32,9 +33,9 @@
 #include <SFML/Window.hpp>
 
 // * ImGui *
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui-SFML.h"
-#include "imgui.h"
+// #define IMGUI_DEFINE_MATH_OPERATORS
+// #include "imgui-SFML.h"
+// #include "imgui.h"
 
 
 
@@ -56,4 +57,21 @@
 
 #define CH_SCENE_CLEAR_BACKGROUND           sf::Color(158, 222, 232, 255)   // light blue
 
-#define CH_GLOBAL_SCALE                     4.f          
+#define CH_GLOBAL_SCALE                     2.f          
+
+
+// ** Board **
+#define CH_BOARD_TEXTURE_PATH   "./assets/board.png"
+#define CH_PIECE_TEXTURE_PATH   "./assets/pieces"
+
+#define CH_BOARD_SIZE_X 8
+#define CH_BOARD_SIZE_Y 8
+
+#define CH_WHITE 0
+#define CH_BLACK 1
+
+#define CH_NUM_PIECES       6 + 1
+#define CH_NUM_PIECE_COLORS 2
+
+
+#define CH_MAX_MOVE_TRACEBACK 2
