@@ -51,6 +51,8 @@ namespace Chez {
 
             UpdateSpritePos(i);
         }
+
+        m_ColorToMove = Piece_Color::White;
     }
 
 
@@ -108,14 +110,16 @@ namespace Chez {
         }
 
         if (target_square != square) {
-            CH_CORE_TRACE("Moving: [{0} -> {1}]", square, target_square);
+            CH_CORE_TRACE("({0}) Moving: [{1} -> {2}]", (u8)m_ColorToMove, square, target_square);
             m_Board[target_square] = m_Board[square];
             m_Board[square] = nullptr;
 
             // Update Traceback squares
             m_MoveTracbackSquares[0] = Convert::getBoardTracebackRect(m_SquareSize, square, sf::Color(163, 177, 138, 255));
             m_MoveTracbackSquares[1] = Convert::getBoardTracebackRect(m_SquareSize, target_square, sf::Color(88, 129, 87, 255));
-
+        
+            // Change current move color
+            m_ColorToMove == Piece_Color::White ? m_ColorToMove = Piece_Color::Black : m_ColorToMove = Piece_Color::White; 
         }
 
         UpdateSpritePos(target_square);
@@ -135,6 +139,7 @@ namespace Chez {
         s8 square = Convert::mousePositionToBoardSquare(Convert::getRelativeMousePosition(m_Window), m_SquareSize);
         if (square == -1) { return; }
         if (m_Board[square] == nullptr) { return; }
+        if (m_Board[square]->color != m_ColorToMove) { return; }
 
         m_DragActive = true; 
         m_DragFromSquare = square;
