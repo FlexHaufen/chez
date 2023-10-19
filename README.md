@@ -1,10 +1,9 @@
 # Chez
 
-
-Some random ass 2D chess engine
+Some random ass 2D chess engine coded in **C++**
 
 ## Intention
-- 
+- Play chess and lose against a engine
 
 ## Dependencies
 - [SFML](https://www.sfml-dev.org/index.php) 

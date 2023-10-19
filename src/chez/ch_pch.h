@@ -48,7 +48,7 @@
 
 
 // *** DEFINES ***
-#define CH_VERSION                          "0.0.1a"
+#define CH_VERSION                          "0.0.2a"
 
 #define CH_WINDOW_RESIZABLE                             // flag
 #define CH_WINDOW_X                         1920

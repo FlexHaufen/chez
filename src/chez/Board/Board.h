@@ -116,6 +116,8 @@ namespace Chez {
         u8 m_DragFromSquare;                    // square from Drag&Drop
         u8 m_DragToSquare;                      // square to Drag&Drop
 
+        Piece_Color m_ColorToMove;              // Color to make next move. 0: White, 1: Black
+
         // Board
         PieceTextureLookup m_PieceTextureLookup;    // Texture Map for pieces
         

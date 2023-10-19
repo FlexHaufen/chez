@@ -28,7 +28,7 @@ namespace Chez {
 	void Log::Init() {
 		std::vector<spdlog::sink_ptr> logSinks;
 		logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Acaer.log", true));
+		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("chez.log", true));
 
 		// ** Console Log **
 		//							"[DD.MM.YY HH:MM:SS.ms][pid][tid] [CORE]: msg]"

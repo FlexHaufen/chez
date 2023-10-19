@@ -12,6 +12,8 @@
 // *** INCLUDES ***
 #include "chez/Core/Core.h"
 
+#include "chez/Helper/Convert.h"
+
 // *** NAMESPACE ***
 namespace Chez {
 
@@ -31,6 +33,11 @@ namespace Chez {
         m_WindowTitle = "chez v";
         m_WindowTitle.append(CH_VERSION);
         m_Window.create(sf::VideoMode(CH_WINDOW_X, CH_WINDOW_Y), m_WindowTitle);
+
+        // Setup View
+        m_View.setSize(CH_WINDOW_X, CH_WINDOW_Y);
+        m_View.setCenter(m_View.getSize().x / 2, m_View.getSize().y / 2 );
+        Convert::getLetterboxView(m_View, CH_WINDOW_X, CH_WINDOW_Y);  
 
         //sf::Image icon;
         //if (!icon.loadFromFile(AC_WINDOW_ICON_PATH)) {
@@ -74,9 +81,14 @@ namespace Chez {
             m_Board->OnEvent(e);
 
             switch(e.type) {
-                case sf::Event::Closed:;
-                     Close();
-                     break;
+                case sf::Event::Resized:
+                    // update the view to the new size of the window
+                    Convert::getLetterboxView(m_View, e.size.width, e.size.height );
+                    break;
+
+                case sf::Event::Closed:
+                    Close();
+                    break;
             }
         }
     }
@@ -94,6 +106,7 @@ namespace Chez {
 
         // ---- RENDER LOOP ----
         m_Window.clear(CH_SCENE_CLEAR_BACKGROUND);
+        m_Window.setView(m_View);
         m_Board->OnRender();
 
         m_Window.display();

@@ -79,7 +79,7 @@ namespace Chez {
         sf::RenderWindow m_Window;      // Sfml window
         std::string m_WindowTitle;      // Sfml window title
 
-
+        sf::View m_View;                // Sfml main View
 
         Ref<Board>      m_Board;        // Game Board
     };
