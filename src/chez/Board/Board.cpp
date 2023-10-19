@@ -47,7 +47,7 @@ namespace Chez {
             m_Board[i]->sprite.setTexture(t);
             // Dynamically set Scale
             m_Board[i]->sprite.setScale(sf::Vector2f(m_BoardTexture.getSize().x / t.getSize().x * CH_GLOBAL_SCALE / CH_BOARD_SIZE_X,
-                                                    m_BoardTexture.getSize().y / t.getSize().y * CH_GLOBAL_SCALE / CH_BOARD_SIZE_Y));
+                                                     m_BoardTexture.getSize().y / t.getSize().y * CH_GLOBAL_SCALE / CH_BOARD_SIZE_Y));
 
             UpdateSpritePos(i);
         }
@@ -62,19 +62,13 @@ namespace Chez {
         }
 
         for (auto &i : m_Board) {
-            if (i == nullptr) {
-                continue;
-            }
+            if (i == nullptr) { continue; }
             m_Window.draw(i->sprite);
         }
     }
 
 
     void Board::OnEvent(sf::Event &e) {
-
-        // FIXME (inj):
-        // - Error on moving to the same square
-        // - Error on clicken on another square first
         switch(e.type) {
             case sf::Event::MouseButtonPressed:
                 if (e.key.code == sf::Mouse::Left) {
